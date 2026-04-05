@@ -150,8 +150,8 @@ function searchDateRange(input: { startDate?: string | null; endDate?: string | 
   startMs: number | null;
   endMs: number | null;
 } {
-  const startMs = input.startDate ? new Date(`${input.startDate}T00:00:00.000`).getTime() : null;
-  const endMs = input.endDate ? new Date(`${input.endDate}T23:59:59.999`).getTime() : null;
+  const startMs = input.startDate ? new Date(`${input.startDate}T00:00:00.000Z`).getTime() : null;
+  const endMs = input.endDate ? new Date(`${input.endDate}T23:59:59.999Z`).getTime() : null;
 
   return { startMs, endMs };
 }

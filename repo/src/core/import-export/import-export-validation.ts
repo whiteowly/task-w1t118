@@ -153,44 +153,56 @@ export const collaborationNoteImportSchema = z.object({
   updatedAt: z.string().min(1)
 });
 
-const baseRowSchema = z.object({
-  id: z.string().min(1),
-  createdAt: z.string().min(1)
-}).passthrough();
+const baseRowSchema = z
+  .object({
+    id: z.string().min(1),
+    createdAt: z.string().min(1)
+  })
+  .passthrough();
 
-const usersRowSchema = z.object({
-  id: z.string().min(1),
-  username: z.string().min(1),
-  roles: z.array(z.unknown()),
-  status: z.string().min(1),
-  createdAt: z.string().min(1)
-}).passthrough();
+const usersRowSchema = z
+  .object({
+    id: z.string().min(1),
+    username: z.string().min(1),
+    roles: z.array(z.unknown()),
+    status: z.string().min(1),
+    createdAt: z.string().min(1)
+  })
+  .passthrough();
 
-const auditEventsRowSchema = z.object({
-  id: z.string().min(1),
-  actionType: z.string().min(1),
-  entityType: z.string().min(1),
-  entityId: z.string().min(1),
-  createdAt: z.string().min(1)
-}).passthrough();
+const auditEventsRowSchema = z
+  .object({
+    id: z.string().min(1),
+    actionType: z.string().min(1),
+    entityType: z.string().min(1),
+    entityId: z.string().min(1),
+    createdAt: z.string().min(1)
+  })
+  .passthrough();
 
-const bookingsRowSchema = z.object({
-  id: z.string().min(1),
-  status: z.string().min(1),
-  createdAt: z.string().min(1)
-}).passthrough();
+const bookingsRowSchema = z
+  .object({
+    id: z.string().min(1),
+    status: z.string().min(1),
+    createdAt: z.string().min(1)
+  })
+  .passthrough();
 
-const recruitingOffersRowSchema = z.object({
-  id: z.string().min(1),
-  status: z.string().min(1).optional(),
-  createdAt: z.string().min(1)
-}).passthrough();
+const recruitingOffersRowSchema = z
+  .object({
+    id: z.string().min(1),
+    status: z.string().min(1).optional(),
+    createdAt: z.string().min(1)
+  })
+  .passthrough();
 
-const rolesRowSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().min(1),
-  createdAt: z.string().min(1)
-}).passthrough();
+const rolesRowSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    createdAt: z.string().min(1)
+  })
+  .passthrough();
 
 const workspaceBackupTablesSchema = z.object({
   users: z.array(usersRowSchema).optional(),

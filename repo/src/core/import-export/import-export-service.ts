@@ -650,9 +650,7 @@ export async function commitImport(preview: ImportPreview): Promise<ImportCommit
         // Append audit events from backup — never clear, never overwrite existing records
         const backupAuditRows = backupTables['auditEvents'] ?? [];
         if (backupAuditRows.length > 0) {
-          const existingAuditIds = new Set(
-            (await db.auditEvents.toArray()).map((e) => e.id)
-          );
+          const existingAuditIds = new Set((await db.auditEvents.toArray()).map((e) => e.id));
           const newAuditRows = backupAuditRows.filter(
             (row) => !existingAuditIds.has((row as { id: string }).id)
           );

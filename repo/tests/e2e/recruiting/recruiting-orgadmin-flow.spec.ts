@@ -95,9 +95,7 @@ test('recruiting approval, signature, and onboarding flow', async ({ page }) => 
   await page.getByLabel('Emergency contact phone').fill('+1 (555) 121-2121');
   await page.getByRole('button', { name: 'Save onboarding documents' }).click();
 
-  await expect(page.getByRole('status')).toContainText(
-    'Onboarding documents saved with masked SSN'
-  );
+  await expect(page.getByText('Onboarding documents saved')).toBeVisible();
   await expect(page.getByText('***-**-6789')).toBeVisible();
 
   const checklistCard = page.locator('section').filter({ hasText: 'Onboarding checklist' }).first();

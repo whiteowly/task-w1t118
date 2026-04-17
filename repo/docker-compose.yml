@@ -11,7 +11,7 @@ services:
       - localops-data:/app/data
     environment:
       - PORT=3001
-      - NODE_ENV=production
+      - NODE_ENV=development
 
   app:
     image: node:20-alpine

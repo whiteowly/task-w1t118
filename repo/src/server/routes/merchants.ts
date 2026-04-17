@@ -23,35 +23,40 @@ router.post('/merchants', requireAuth, requireCapability('workspace.merchant.edi
 
 router.patch('/merchants/:merchantId', requireAuth, requireCapability('workspace.merchant.editDraft'), (req: AuthenticatedRequest, res, next) => {
   try {
-    const result = merchantService.updateMerchantDraft(actor(req), req.params.merchantId, req.body);
+    const merchantId = String(req.params.merchantId);
+    const result = merchantService.updateMerchantDraft(actor(req), merchantId, req.body);
     res.json(result);
   } catch (err) { next(err); }
 });
 
 router.post('/merchants/:merchantId/submit', requireAuth, requireCapability('workspace.merchant.editDraft'), (req: AuthenticatedRequest, res, next) => {
   try {
-    merchantService.submitMerchantForReview(actor(req), req.params.merchantId, req.body ?? {});
+    const merchantId = String(req.params.merchantId);
+    merchantService.submitMerchantForReview(actor(req), merchantId, req.body ?? {});
     res.json({ message: 'Merchant submitted for review.' });
   } catch (err) { next(err); }
 });
 
 router.post('/merchants/:merchantId/approve', requireAuth, requireCapability('workspace.merchant.reviewPublish'), (req: AuthenticatedRequest, res, next) => {
   try {
-    merchantService.approveMerchant(actor(req), req.params.merchantId);
+    const merchantId = String(req.params.merchantId);
+    merchantService.approveMerchant(actor(req), merchantId);
     res.json({ message: 'Merchant approved.' });
   } catch (err) { next(err); }
 });
 
 router.post('/merchants/:merchantId/reject', requireAuth, requireCapability('workspace.merchant.reviewPublish'), (req: AuthenticatedRequest, res, next) => {
   try {
-    merchantService.rejectMerchant(actor(req), req.params.merchantId, req.body ?? {});
+    const merchantId = String(req.params.merchantId);
+    merchantService.rejectMerchant(actor(req), merchantId, req.body ?? {});
     res.json({ message: 'Merchant rejected.' });
   } catch (err) { next(err); }
 });
 
 router.post('/merchants/:merchantId/publish', requireAuth, requireCapability('workspace.merchant.reviewPublish'), (req: AuthenticatedRequest, res, next) => {
   try {
-    merchantService.publishMerchant(actor(req), req.params.merchantId);
+    const merchantId = String(req.params.merchantId);
+    merchantService.publishMerchant(actor(req), merchantId);
     res.json({ message: 'Merchant published.' });
   } catch (err) { next(err); }
 });

@@ -31,14 +31,16 @@ router.post('/bookings', requireAuth, requireCapability('workspace.booking.manag
 
 router.post('/bookings/:bookingId/reschedule', requireAuth, requireCapability('workspace.booking.manage'), (req: AuthenticatedRequest, res, next) => {
   try {
-    const result = bookingService.rescheduleBooking(actor(req), req.params.bookingId, req.body);
+    const bookingId = String(req.params.bookingId);
+    const result = bookingService.rescheduleBooking(actor(req), bookingId, req.body);
     res.json(result);
   } catch (err) { next(err); }
 });
 
 router.post('/bookings/:bookingId/cancel', requireAuth, requireCapability('workspace.booking.manage'), (req: AuthenticatedRequest, res, next) => {
   try {
-    const result = bookingService.cancelBooking(actor(req), req.params.bookingId, req.body);
+    const bookingId = String(req.params.bookingId);
+    const result = bookingService.cancelBooking(actor(req), bookingId, req.body);
     res.json(result);
   } catch (err) { next(err); }
 });

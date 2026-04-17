@@ -13,7 +13,8 @@ beforeEach(() => {
   app = createApp();
 });
 
-async function getAdminToken(agent: request.SuperTest<request.Test>) {
+async function getAdminToken() {
+  const agent = request(app);
   await agent.post('/api/v1/auth/bootstrap-admin').send({
     username: 'admin',
     password: 'password-123',
@@ -28,7 +29,7 @@ async function getAdminToken(agent: request.SuperTest<request.Test>) {
 
 describe('GET /api/v1/merchants', () => {
   it('returns empty array initially', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const res = await request(app)
       .get('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`);
@@ -37,7 +38,7 @@ describe('GET /api/v1/merchants', () => {
   });
 
   it('returns merchants after creation', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -53,7 +54,7 @@ describe('GET /api/v1/merchants', () => {
 
 describe('POST /api/v1/merchants', () => {
   it('creates a draft merchant', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const res = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -67,7 +68,7 @@ describe('POST /api/v1/merchants', () => {
   });
 
   it('returns 400 when name is empty', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const res = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -79,7 +80,7 @@ describe('POST /api/v1/merchants', () => {
 
 describe('PATCH /api/v1/merchants/:id', () => {
   it('updates a draft merchant', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const created = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -104,7 +105,7 @@ describe('PATCH /api/v1/merchants/:id', () => {
 
 describe('POST /api/v1/merchants/:id/submit', () => {
   it('submits a draft for review', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const created = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -121,7 +122,7 @@ describe('POST /api/v1/merchants/:id/submit', () => {
 
 describe('POST /api/v1/merchants/:id/approve', () => {
   it('approves an in-review merchant', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const created = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -141,7 +142,7 @@ describe('POST /api/v1/merchants/:id/approve', () => {
 
 describe('POST /api/v1/merchants/:id/reject', () => {
   it('rejects an in-review merchant', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const created = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -162,7 +163,7 @@ describe('POST /api/v1/merchants/:id/reject', () => {
 
 describe('POST /api/v1/merchants/:id/publish', () => {
   it('publishes an approved merchant', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const created = await request(app)
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
@@ -185,7 +186,7 @@ describe('POST /api/v1/merchants/:id/publish', () => {
 
 describe('merchant full workflow', () => {
   it('creates, submits, approves, and publishes a merchant', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
 
     const created = await request(app)
       .post('/api/v1/merchants')

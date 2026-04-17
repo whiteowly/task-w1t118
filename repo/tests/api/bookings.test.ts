@@ -14,7 +14,8 @@ beforeEach(() => {
   app = createApp();
 });
 
-async function getAdminToken(agent: request.SuperTest<request.Test>) {
+async function getAdminToken() {
+  const agent = request(app);
   await agent.post('/api/v1/auth/bootstrap-admin').send({
     username: 'admin',
     password: 'password-123',
@@ -38,7 +39,7 @@ function futureDateKey(): string {
 
 describe('GET /api/v1/bookings/availability', () => {
   it('returns availability grid for a date', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const date = futureDateKey();
     const res = await request(app)
       .get(`/api/v1/bookings/availability?date=${date}`)
@@ -55,7 +56,7 @@ describe('GET /api/v1/bookings/availability', () => {
 
 describe('GET /api/v1/bookings', () => {
   it('returns bookings for a date', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const date = futureDateKey();
     const res = await request(app)
       .get(`/api/v1/bookings?date=${date}`)
@@ -68,7 +69,7 @@ describe('GET /api/v1/bookings', () => {
 
 describe('POST /api/v1/bookings', () => {
   it('creates a booking', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const startsAt = futureIso(240);
     const res = await request(app)
       .post('/api/v1/bookings')
@@ -92,7 +93,7 @@ describe('POST /api/v1/bookings', () => {
   });
 
   it('returns 400 for missing required fields', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const res = await request(app)
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${token}`)
@@ -104,7 +105,7 @@ describe('POST /api/v1/bookings', () => {
   });
 
   it('returns 409 for duplicate idempotency key', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const startsAt = futureIso(240);
     const idempotencyKey = crypto.randomUUID();
     const payload = {
@@ -131,7 +132,7 @@ describe('POST /api/v1/bookings', () => {
 
 describe('POST /api/v1/bookings/:id/reschedule', () => {
   it('reschedules an existing booking', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const startsAt = futureIso(240);
     const created = await request(app)
       .post('/api/v1/bookings')
@@ -165,7 +166,7 @@ describe('POST /api/v1/bookings/:id/reschedule', () => {
 
 describe('POST /api/v1/bookings/:id/cancel', () => {
   it('cancels a confirmed booking', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const startsAt = futureIso(600);
     const created = await request(app)
       .post('/api/v1/bookings')
@@ -195,7 +196,7 @@ describe('POST /api/v1/bookings/:id/cancel', () => {
 
 describe('booking conflict', () => {
   it('returns 409 when booking same resource and overlapping time', async () => {
-    const token = await getAdminToken(request(app));
+    const token = await getAdminToken();
     const startsAt = futureIso(240);
     await request(app)
       .post('/api/v1/bookings')

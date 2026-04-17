@@ -13,7 +13,8 @@ beforeEach(() => {
   app = createApp();
 });
 
-async function bootstrapAndLogin(agent: request.SuperTest<request.Test>) {
+async function bootstrapAndLogin() {
+  const agent = request(app);
   await agent.post('/api/v1/auth/bootstrap-admin').send({
     username: 'admin',
     password: 'password-123',
@@ -132,7 +133,7 @@ describe('POST /api/v1/auth/login', () => {
 
 describe('POST /api/v1/auth/logout', () => {
   it('logs out successfully', async () => {
-    const token = await bootstrapAndLogin(request(app));
+    const token = await bootstrapAndLogin();
     const res = await request(app)
       .post('/api/v1/auth/logout')
       .set('Authorization', `Bearer ${token}`);

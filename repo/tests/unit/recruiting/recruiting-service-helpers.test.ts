@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { canManageRecruitingActions, canApproveRecruitingActions } from '../../../src/modules/recruiting/recruiting-service';
+import {
+  canManageRecruitingActions,
+  canApproveRecruitingActions
+} from '../../../src/modules/recruiting/recruiting-service';
 
 describe('recruiting service helpers', () => {
   it('canManageRecruitingActions grants Recruiter', () => {

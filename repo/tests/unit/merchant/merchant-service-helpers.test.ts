@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { canEditDraftActions, canReviewPublishActions, isWorkflowTransitionAllowed } from '../../../src/modules/merchant/merchant-service';
+import {
+  canEditDraftActions,
+  canReviewPublishActions,
+  isWorkflowTransitionAllowed
+} from '../../../src/modules/merchant/merchant-service';
 
 describe('merchant service helpers', () => {
   it('canEditDraftActions grants MerchantEditor', () => {

@@ -9,7 +9,11 @@ describe('OrgAdminWorkspacePage component', () => {
   beforeEach(async () => {
     await db.delete();
     await initializeDatabase();
-    await bootstrapAdministrator({ username: 'admin', password: 'password-123', confirmPassword: 'password-123' });
+    await bootstrapAdministrator({
+      username: 'admin',
+      password: 'password-123',
+      confirmPassword: 'password-123'
+    });
     await login({ username: 'admin', password: 'password-123' });
   });
 
@@ -19,12 +23,16 @@ describe('OrgAdminWorkspacePage component', () => {
   });
 
   it('renders Org Admin heading for Administrator', async () => {
-    const { findByRole } = render(OrgAdminWorkspaceHarness, { props: { roles: ['Administrator'] } });
+    const { findByRole } = render(OrgAdminWorkspaceHarness, {
+      props: { roles: ['Administrator'] }
+    });
     expect(await findByRole('heading', { name: 'Local user administration' })).toBeTruthy();
   });
 
   it('renders user creation form for Administrator', async () => {
-    const { findByLabelText, findByRole } = render(OrgAdminWorkspaceHarness, { props: { roles: ['Administrator'] } });
+    const { findByLabelText, findByRole } = render(OrgAdminWorkspaceHarness, {
+      props: { roles: ['Administrator'] }
+    });
     expect(await findByLabelText('Username')).toBeTruthy();
     expect(await findByRole('button', { name: 'Create user' })).toBeTruthy();
   });

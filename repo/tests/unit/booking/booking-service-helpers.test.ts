@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { canManageBookingActions, getBookingResources, getBookingDurationOptions } from '../../../src/modules/booking/booking-service';
+import {
+  canManageBookingActions,
+  getBookingResources,
+  getBookingDurationOptions
+} from '../../../src/modules/booking/booking-service';
 
 describe('booking service helpers', () => {
   it('canManageBookingActions grants BookingAgent', () => {

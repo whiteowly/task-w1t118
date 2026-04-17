@@ -9,7 +9,11 @@ describe('ConversationPanel component', () => {
   beforeEach(async () => {
     await db.delete();
     await initializeDatabase();
-    await bootstrapAdministrator({ username: 'admin', password: 'password-123', confirmPassword: 'password-123' });
+    await bootstrapAdministrator({
+      username: 'admin',
+      password: 'password-123',
+      confirmPassword: 'password-123'
+    });
     await login({ username: 'admin', password: 'password-123' });
   });
 
@@ -24,7 +28,9 @@ describe('ConversationPanel component', () => {
   });
 
   it('shows post message form for roles with collaboration access', async () => {
-    const { findByLabelText } = render(ConversationPanelHarness, { props: { roles: ['Administrator'] } });
+    const { findByLabelText } = render(ConversationPanelHarness, {
+      props: { roles: ['Administrator'] }
+    });
     expect(await findByLabelText('Post message')).toBeTruthy();
   });
 

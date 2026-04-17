@@ -198,18 +198,15 @@ describe('booking conflict', () => {
   it('returns 409 when booking same resource and overlapping time', async () => {
     const token = await getAdminToken();
     const startsAt = futureIso(240);
-    await request(app)
-      .post('/api/v1/bookings')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        resourceId: 'patio-a',
-        startsAt,
-        durationMinutes: 60,
-        customerName: 'First',
-        partySize: 2,
-        notes: '',
-        idempotencyKey: crypto.randomUUID()
-      });
+    await request(app).post('/api/v1/bookings').set('Authorization', `Bearer ${token}`).send({
+      resourceId: 'patio-a',
+      startsAt,
+      durationMinutes: 60,
+      customerName: 'First',
+      partySize: 2,
+      notes: '',
+      idempotencyKey: crypto.randomUUID()
+    });
     const res = await request(app)
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${token}`)

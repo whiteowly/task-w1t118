@@ -9,7 +9,11 @@ describe('RecruitingWorkspacePage component', () => {
   beforeEach(async () => {
     await db.delete();
     await initializeDatabase();
-    await bootstrapAdministrator({ username: 'admin', password: 'password-123', confirmPassword: 'password-123' });
+    await bootstrapAdministrator({
+      username: 'admin',
+      password: 'password-123',
+      confirmPassword: 'password-123'
+    });
     await login({ username: 'admin', password: 'password-123' });
   });
 
@@ -24,12 +28,16 @@ describe('RecruitingWorkspacePage component', () => {
   });
 
   it('renders for Administrator role', () => {
-    const { getByRole } = render(RecruitingWorkspaceHarness, { props: { roles: ['Administrator'] } });
+    const { getByRole } = render(RecruitingWorkspaceHarness, {
+      props: { roles: ['Administrator'] }
+    });
     expect(getByRole('heading', { name: 'Recruiting Workspace' })).toBeTruthy();
   });
 
   it('shows no-access message for BookingAgent role', async () => {
-    const { findByText } = render(RecruitingWorkspaceHarness, { props: { roles: ['BookingAgent'] } });
+    const { findByText } = render(RecruitingWorkspaceHarness, {
+      props: { roles: ['BookingAgent'] }
+    });
     expect(await findByText(/cannot access recruiting/i)).toBeTruthy();
   });
 });

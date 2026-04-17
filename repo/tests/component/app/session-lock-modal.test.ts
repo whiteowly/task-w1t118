@@ -14,7 +14,9 @@ describe('SessionLockModal', () => {
   });
 
   it('renders password input and unlock button when open', () => {
-    const { getByLabelText, getByRole } = render(SessionLockModalHarness, { props: { open: true } });
+    const { getByLabelText, getByRole } = render(SessionLockModalHarness, {
+      props: { open: true }
+    });
     expect(getByLabelText('Password')).toBeTruthy();
     expect(getByRole('button', { name: 'Unlock session' })).toBeTruthy();
   });

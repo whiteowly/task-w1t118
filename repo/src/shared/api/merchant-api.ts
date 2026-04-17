@@ -27,10 +27,7 @@ export async function updateMerchantDraftViaApi(
   return api.updateMerchantDraft(merchantId, input);
 }
 
-export async function submitMerchantForReviewViaApi(
-  merchantId: string,
-  reason?: string
-) {
+export async function submitMerchantForReviewViaApi(merchantId: string, reason?: string) {
   return api.submitMerchantForReview(merchantId, { reason });
 }
 

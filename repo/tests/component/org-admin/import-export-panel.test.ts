@@ -9,7 +9,11 @@ describe('ImportExportPanel component', () => {
   beforeEach(async () => {
     await db.delete();
     await initializeDatabase();
-    await bootstrapAdministrator({ username: 'admin', password: 'password-123', confirmPassword: 'password-123' });
+    await bootstrapAdministrator({
+      username: 'admin',
+      password: 'password-123',
+      confirmPassword: 'password-123'
+    });
     await login({ username: 'admin', password: 'password-123' });
   });
 

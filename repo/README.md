@@ -6,11 +6,11 @@ Fullstack operational workspace for LocalOps. The repo contains a **Svelte SPA f
 
 ### Architecture
 
-| Layer | Technology | Persistence |
-|-------|-----------|-------------|
-| Frontend | Svelte 5 SPA + Vite | IndexedDB (Dexie) for non-migrated domains |
-| Backend API | Express + TypeScript | SQLite via better-sqlite3 (`data/localops.sqlite`) |
-| Auth | Bearer token sessions | Server-side session table |
+| Layer       | Technology            | Persistence                                        |
+| ----------- | --------------------- | -------------------------------------------------- |
+| Frontend    | Svelte 5 SPA + Vite   | IndexedDB (Dexie) for non-migrated domains         |
+| Backend API | Express + TypeScript  | SQLite via better-sqlite3 (`data/localops.sqlite`) |
+| Auth        | Bearer token sessions | Server-side session table                          |
 
 The frontend calls `/api/v1/*` endpoints for **auth flows** (bootstrap admin, login, logout) via `src/shared/api/auth-api.ts`. API client adapters for merchant and booking flows are available at `src/shared/api/merchant-api.ts` and `src/shared/api/booking-api.ts`. All other domains (recruiting, org-admin, collaboration, import/export) and the merchant/booking workspace UI continue to use browser-local IndexedDB pending full migration.
 
@@ -314,11 +314,11 @@ Use this section for fast static traceability of the current implemented slice:
 
 ### Test suites
 
-| Suite | Runner | Files | Tests | Description |
-|-------|--------|-------|-------|-------------|
-| Unit/integration/component | `npm run test:unit` | 42 | 161 | Service logic, validation, permissions, DB integration, UI components |
-| API | `npm run test:api` | 4 | 31 | Real HTTP requests against Express + SQLite (zero mocks) |
-| E2E | `npm run test:e2e` | 7 | 9 | Full browser flows via Playwright |
+| Suite                      | Runner              | Files | Tests | Description                                                           |
+| -------------------------- | ------------------- | ----- | ----- | --------------------------------------------------------------------- |
+| Unit/integration/component | `npm run test:unit` | 42    | 161   | Service logic, validation, permissions, DB integration, UI components |
+| API                        | `npm run test:api`  | 4     | 31    | Real HTTP requests against Express + SQLite (zero mocks)              |
+| E2E                        | `npm run test:e2e`  | 7     | 9     | Full browser flows via Playwright                                     |
 
 ## Main repository contents
 

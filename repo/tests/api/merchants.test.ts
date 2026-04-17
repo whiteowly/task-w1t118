@@ -30,9 +30,7 @@ async function getAdminToken() {
 describe('GET /api/v1/merchants', () => {
   it('returns empty array initially', async () => {
     const token = await getAdminToken();
-    const res = await request(app)
-      .get('/api/v1/merchants')
-      .set('Authorization', `Bearer ${token}`);
+    const res = await request(app).get('/api/v1/merchants').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
   });
@@ -43,9 +41,7 @@ describe('GET /api/v1/merchants', () => {
       .post('/api/v1/merchants')
       .set('Authorization', `Bearer ${token}`)
       .send({ name: 'Test Merchant', description: 'A test', tags: [], amenities: [] });
-    const res = await request(app)
-      .get('/api/v1/merchants')
-      .set('Authorization', `Bearer ${token}`);
+    const res = await request(app).get('/api/v1/merchants').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
     expect(res.body[0].snapshot.name).toBe('Test Merchant');

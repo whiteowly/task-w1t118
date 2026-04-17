@@ -5,8 +5,14 @@ function callErrorHandler(err: unknown) {
   let statusCode = 0;
   let body: unknown = null;
   const res = {
-    status(code: number) { statusCode = code; return this; },
-    json(data: unknown) { body = data; return this; }
+    status(code: number) {
+      statusCode = code;
+      return this;
+    },
+    json(data: unknown) {
+      body = data;
+      return this;
+    }
   };
   errorHandler(err as any, {} as any, res as any, (() => {}) as any);
   return { statusCode, body };

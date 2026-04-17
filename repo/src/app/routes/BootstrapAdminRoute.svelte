@@ -1,7 +1,7 @@
 <script lang="ts">
   import { link, push } from 'svelte-spa-router';
 
-  import { bootstrapAdministrator } from '../../core/auth/auth-service';
+  import { bootstrapAdministratorViaApi } from '../../shared/api/auth-api';
   import { logger } from '../../core/logging/logger';
   import { normalizeUnknownError } from '../../core/validation/errors';
   import { appBootstrapStore } from '../../shared/stores/app-store';
@@ -22,7 +22,7 @@
     fieldErrors = {};
 
     try {
-      await bootstrapAdministrator({ username, password, confirmPassword });
+      await bootstrapAdministratorViaApi({ username, password, confirmPassword });
       appBootstrapStore.update((state) => ({ ...state, bootstrapRequired: false }));
       push('/login');
     } catch (error) {

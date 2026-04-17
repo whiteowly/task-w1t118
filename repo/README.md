@@ -1,30 +1,118 @@
 # LocalOps Workspace (Merchant + Booking + Recruiting + Org Admin + Collaboration + Import/Export)
 
-Offline-first browser SPA for LocalOps operational workspaces. The repo now contains real **Merchant Console**, **Booking Desk**, **Recruiting Workspace**, **Org Admin hierarchy/position management**, **Collaboration panel persistence/search**, and **Import/Export backup + bulk operations** on top of shared auth/session/permissions/admin foundations.
+Project type: **fullstack**
 
-No network backend is used; persistence is browser-local IndexedDB via Dexie.
+Fullstack operational workspace for LocalOps. The repo contains a **Svelte SPA frontend** served by Vite and a **Node.js/Express REST API backend** with SQLite persistence. The backend exposes versioned endpoints under `/api/v1/` for auth, merchants, and bookings. The frontend proxies API requests to the backend during development.
 
-## Runtime and test entrypoints
+### Architecture
 
-- Primary runtime command: `./run_app.sh`
-- Broad test command: `./run_tests.sh`
+| Layer | Technology | Persistence |
+|-------|-----------|-------------|
+| Frontend | Svelte 5 SPA + Vite | IndexedDB (Dexie) for non-migrated domains |
+| Backend API | Express + TypeScript | SQLite via better-sqlite3 (`data/localops.sqlite`) |
+| Auth | Bearer token sessions | Server-side session table |
 
-Both wrappers install dependencies as needed. No `.env` files are used.
+The frontend calls `/api/v1/*` endpoints for **auth flows** (bootstrap admin, login, logout) via `src/shared/api/auth-api.ts`. API client adapters for merchant and booking flows are available at `src/shared/api/merchant-api.ts` and `src/shared/api/booking-api.ts`. All other domains (recruiting, org-admin, collaboration, import/export) and the merchant/booking workspace UI continue to use browser-local IndexedDB pending full migration.
+
+## Container-only runtime and test policy
+
+- Use Docker Compose for startup and test execution.
+- Do not run local runtime installs (`npm install`, `pip install`, `apt-get`) on the host.
+- No manual database setup is required — SQLite is file-based and auto-created.
+- No `.env` files are required.
+
+## Quickstart (required)
+
+```bash
+docker-compose up
+```
+
+This starts both the **API server** (port 3001) and the **frontend dev server** (port 4173).
+
+- Frontend: `http://127.0.0.1:4173`
+- Backend API: `http://127.0.0.1:3001/api/v1/health`
+
+> If ports are unavailable, change the host port mappings in `docker-compose.yml` and restart.
+
+### Verify backend is active
+
+```bash
+# Health check
+curl http://127.0.0.1:3001/api/v1/health
+# → {"status":"ok","timestamp":"..."}
+
+# Bootstrap admin
+curl -X POST http://127.0.0.1:3001/api/v1/auth/bootstrap-admin \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"password-123","confirmPassword":"password-123"}'
+# → {"message":"Administrator created."}
+
+# Login
+curl -X POST http://127.0.0.1:3001/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"password-123"}'
+# → {"token":"...","user":{"id":"...","username":"admin","roles":["Administrator"]}}
+
+# List merchants (with token)
+curl http://127.0.0.1:3001/api/v1/merchants \
+  -H 'Authorization: Bearer <token>'
+# → []
+```
+
+## Verification method
+
+After `docker-compose up` reports the dev server is running, verify end-to-end behavior through this UI flow:
+
+1. Open `http://127.0.0.1:4173`.
+2. Confirm you are redirected to `/bootstrap-admin` and can see **Create initial administrator**.
+3. Create the administrator account using the credential matrix below.
+4. Confirm redirect to `/login` and sign in as admin.
+5. Navigate to **Org Admin** and create the role accounts from the matrix below.
+6. Log in as each role account and confirm route access:
+   - `merchant.editor` -> `/merchant`
+   - `content.reviewer` -> `/merchant`
+   - `booking.agent` -> `/booking`
+   - `hr.manager` -> `/recruiting`
+   - `recruiter.user` -> `/recruiting`
+7. Confirm authorization guard behavior by logging in as `booking.agent` and attempting `/org-admin`; the app must route to `/denied`.
+
+## Demo credentials and roles
+
+Authentication is required.
+
+Use the following deterministic demo credentials aligned to the automated test fixtures:
+
+| Role                     | Username           | Password       | Provisioning source                 |
+| ------------------------ | ------------------ | -------------- | ----------------------------------- |
+| Administrator            | `admin`            | `password-123` | Bootstrap page (`/bootstrap-admin`) |
+| MerchantEditor           | `merchant.editor`  | `password-234` | Create in Org Admin                 |
+| ContentReviewerPublisher | `content.reviewer` | `password-234` | Create in Org Admin                 |
+| BookingAgent             | `booking.agent`    | `password-234` | Create in Org Admin                 |
+| HRManager                | `hr.manager`       | `password-345` | Create in Org Admin                 |
+| Recruiter                | `recruiter.user`   | `password-234` | Create in Org Admin                 |
+
+Password variants used in specific integration suites also exist (for example `content.reviewer` with `password-345` in `tests/integration/merchant/merchant-workflow.test.ts`).
+
+### Seeded demo credentials for tests
+
+These credentials are used by automated test setup/fixtures (bootstrap + Org Admin user creation flows):
+
+| Suite scope             | Username           | Password       | Evidence                                                                                                                                         |
+| ----------------------- | ------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| All e2e bootstrap flows | `admin`            | `password-123` | `tests/e2e/scaffold/bootstrap-login-smoke.spec.ts`, `tests/e2e/booking/booking-workflow.spec.ts`, `tests/e2e/merchant/merchant-workflow.spec.ts` |
+| Merchant e2e            | `merchant.editor`  | `password-234` | `tests/e2e/merchant/merchant-workflow.spec.ts`                                                                                                   |
+| Merchant e2e            | `content.reviewer` | `password-234` | `tests/e2e/merchant/merchant-workflow.spec.ts`                                                                                                   |
+| Booking e2e             | `booking.agent`    | `password-234` | `tests/e2e/booking/booking-workflow.spec.ts`                                                                                                     |
+| Auth-management e2e     | `booking.user`     | `password-234` | `tests/e2e/auth/admin-user-management.spec.ts`                                                                                                   |
+| Recruiting e2e          | `recruiter.user`   | `password-234` | `tests/e2e/recruiting/recruiting-orgadmin-flow.spec.ts`                                                                                          |
+| Recruiting e2e          | `hr.manager`       | `password-345` | `tests/e2e/recruiting/recruiting-orgadmin-flow.spec.ts`                                                                                          |
+
+Integration suites also use deterministic fixtures with the same usernames in selected cases (for example `content.reviewer` with `password-345` in `tests/integration/merchant/merchant-workflow.test.ts`).
 
 LocalStorage note:
 
 - Workflow-critical state and encryption key material are not persisted in localStorage.
 - Any future localStorage usage is reserved for lightweight non-sensitive UI preferences only.
-
-## Quickstart
-
-```bash
-./run_app.sh
-```
-
-Default URL: `http://127.0.0.1:4173`
-
-> **Port fallback:** If port 4173 is already in use, Vite will automatically select the next available port. Check the terminal output for the actual URL.
 
 ## What is implemented
 
@@ -217,24 +305,37 @@ Use this section for fast static traceability of the current implemented slice:
 - No additional development slices are intentionally deferred inside this repo scope.
 - Remaining work is verification/hardening depth, not scaffold placeholders.
 
-## Local development commands
+## Test execution (container only)
 
-- `npm run dev` — run Vite dev server
-- `npm run lint` — run `svelte-check`
-- `npm run format` — check formatting
-- `npm run test:unit` — run Vitest unit/component/integration tests
-- `npm run test:e2e` — run Playwright E2E tests
-- `npm run build` — production build
+- Full checks: `docker compose run --rm app sh -c "npm run lint && npm run format && npm run test:unit && npm run test:api && npm run test:e2e && npm run build"`
+- Unit/component/integration only: `docker compose run --rm app npm run test:unit`
+- API tests (real HTTP, no mocks): `docker compose run --rm app npm run test:api`
+- E2E only: `docker compose run --rm app npm run test:e2e`
+
+### Test suites
+
+| Suite | Runner | Files | Tests | Description |
+|-------|--------|-------|-------|-------------|
+| Unit/integration/component | `npm run test:unit` | 42 | 161 | Service logic, validation, permissions, DB integration, UI components |
+| API | `npm run test:api` | 4 | 31 | Real HTTP requests against Express + SQLite (zero mocks) |
+| E2E | `npm run test:e2e` | 7 | 9 | Full browser flows via Playwright |
 
 ## Main repository contents
 
+- `src/server/` — Express backend API (routes, services, middleware, SQLite DB)
+- `src/server/routes/` — REST endpoint handlers (health, auth, merchants, bookings)
+- `src/server/services/` — Server-side business logic
+- `src/server/db/` — SQLite connection and schema initialization
+- `src/shared/api/` — Frontend HTTP client for backend API calls
 - `src/app/` — shell/bootstrap/router/guards/header/session lock modal
 - `src/core/` — db/auth/permissions/logging/validation/audit/concurrency/recovery
 - `src/modules/merchant/` — Merchant Console UI + merchant service/validation/config
 - `src/modules/booking/` — Booking Desk UI + booking service/validation/config
 - `src/modules/recruiting/` — Recruiting workspace UI + recruiting service/validation/config
 - `src/modules/org-admin/` — Org Admin user admin + hierarchy/position services
+- `tests/api/` — Backend API test suite (supertest, real HTTP, zero mocks)
 - `tests/` — unit/component/integration/e2e suites
+- `docs/backend-endpoints.md` — Complete backend endpoint inventory
 
 ## Merchant implementation anchors
 

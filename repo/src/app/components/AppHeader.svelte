@@ -1,7 +1,8 @@
 <script lang="ts">
   import { link } from 'svelte-spa-router';
 
-  import { lockSession, logout } from '../../core/auth/auth-service';
+  import { lockSession } from '../../core/auth/auth-service';
+  import { logoutViaApi } from '../../shared/api/auth-api';
   import { hasCapability } from '../../core/permissions/service';
   import { sessionStore } from '../../shared/stores/session-store';
 
@@ -39,7 +40,7 @@
 
     <div class="session-controls">
       <button type="button" on:click={() => lockSession('Manual lock requested.')}>Lock now</button>
-      <button type="button" on:click={logout}>Logout</button>
+      <button type="button" on:click={logoutViaApi}>Logout</button>
     </div>
   {/if}
 </header>

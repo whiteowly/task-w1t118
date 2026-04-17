@@ -488,7 +488,7 @@
           </form>
 
           {#if selectedOffer.signatureTypedName}
-            <p class="notice" role="status">
+            <p class="notice">
               Signed by {selectedOffer.signatureTypedName} on
               {selectedOffer.signatureSignedAt
                 ? new Date(selectedOffer.signatureSignedAt).toLocaleString()
@@ -582,7 +582,7 @@
           </form>
 
           {#if onboardingDocument}
-            <p class="notice" role="status">
+            <p class="notice">
               Documents saved. SSN shown as masked value: <strong
                 >{onboardingDocument.ssnMasked}</strong
               >

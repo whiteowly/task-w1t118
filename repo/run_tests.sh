@@ -1,26 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$ROOT_DIR"
-
-echo "[run_tests] Installing dependencies..."
-npm install
-
-echo "[run_tests] Ensuring Playwright browser is available..."
-npx playwright install chromium
-
 echo "[run_tests] Running static checks..."
-npm run lint
-npm run format
+docker compose run --rm app sh -c "npm install && npm run lint && npm run format"
 
 echo "[run_tests] Running unit tests..."
-npm run test:unit
+docker compose run --rm app sh -c "npm install && npm run test:unit"
+
+echo "[run_tests] Running API tests..."
+docker compose run --rm app sh -c "npm install && npm run test:api"
 
 echo "[run_tests] Running E2E tests..."
-npm run test:e2e
+docker compose run --rm app sh -c "npm install && npx playwright install chromium && npm run test:e2e"
 
 echo "[run_tests] Running build..."
-npm run build
+docker compose run --rm app sh -c "npm install && npm run build"
 
-echo "[run_tests] All scaffold checks completed."
+echo "[run_tests] All checks completed."

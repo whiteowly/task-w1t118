@@ -1,7 +1,7 @@
 <script lang="ts">
   import { push } from 'svelte-spa-router';
 
-  import { login } from '../../core/auth/auth-service';
+  import { loginViaApi } from '../../shared/api/auth-api';
   import { defaultRouteForRoles } from '../../core/permissions/service';
   import { normalizeUnknownError } from '../../core/validation/errors';
   import { sessionStore } from '../../shared/stores/session-store';
@@ -19,7 +19,7 @@
     fieldErrors = {};
 
     try {
-      await login({ username, password });
+      await loginViaApi({ username, password });
       const session = $sessionStore;
       const route = session.user ? defaultRouteForRoles(session.user.roles) : '/denied';
       push(route);

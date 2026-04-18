@@ -27,6 +27,11 @@
       push('/login');
     } catch (error) {
       const normalized = normalizeUnknownError(error);
+      if (normalized.code === 'CONFLICT') {
+        appBootstrapStore.update((state) => ({ ...state, bootstrapRequired: false }));
+        push('/login');
+        return;
+      }
       fieldErrors = normalized.fieldErrors ?? {};
       formError = normalized.message;
       logger.error('auth', 'Bootstrap admin setup failed.', normalized);

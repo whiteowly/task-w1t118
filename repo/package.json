@@ -17,7 +17,8 @@
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:api": "vitest run --config vitest.api.config.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test tests/e2e/scaffold/bootstrap-login-smoke.spec.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

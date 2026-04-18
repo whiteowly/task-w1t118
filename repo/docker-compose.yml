@@ -14,7 +14,7 @@ services:
       - NODE_ENV=development
 
   app:
-    image: mcr.microsoft.com/playwright:v1.54.2-jammy
+    image: mcr.microsoft.com/playwright:v1.59.1-jammy
     working_dir: /app
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 4173"
     ports:
@@ -24,6 +24,8 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - VITE_API_PROXY_TARGET=http://api:3001
+      - PLAYWRIGHT_API_HEALTH_URL=http://api:3001/api/v1/health
     depends_on:
       - api
 

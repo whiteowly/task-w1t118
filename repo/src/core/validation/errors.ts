@@ -27,9 +27,19 @@ export function normalizeUnknownError(error: unknown): NormalizedError {
   }
 
   if (error instanceof Error) {
+    const unknownError = error as Error & {
+      code?: AppErrorCode;
+      fieldErrors?: Record<string, string[]>;
+      retryable?: boolean;
+      details?: Record<string, unknown>;
+    };
+
     return {
-      code: 'UNKNOWN_ERROR',
-      message: error.message
+      code: unknownError.code ?? 'UNKNOWN_ERROR',
+      message: error.message,
+      fieldErrors: unknownError.fieldErrors,
+      retryable: unknownError.retryable,
+      details: unknownError.details
     };
   }
 

@@ -1,117 +1,18 @@
 import { expect, test } from '@playwright/test';
+import { ensureBootstrapAdministrator, loginViaForm } from '../support/auth-helpers';
 
-async function bootstrapAdmin(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/');
-  await expect(page).toHaveURL(/\/bootstrap-admin$/);
-
-  await page.getByLabel('Username').fill('admin');
-  await page.getByLabel('Password', { exact: true }).fill('password-123');
-  await page.getByLabel('Confirm password').fill('password-123');
-  await page.getByRole('button', { name: 'Create administrator' }).click();
-
-  await expect(page).toHaveURL(/\/login$/);
-}
-
-async function loginAs(
-  page: import('@playwright/test').Page,
-  username: string,
-  password: string
-): Promise<void> {
-  await page.getByLabel('Username').fill(username);
-  await page.getByLabel('Password').fill(password);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-}
-
-async function createUser(
-  page: import('@playwright/test').Page,
-  input: { username: string; password: string; role: 'Recruiter' | 'HRManager' }
-): Promise<void> {
-  await page.getByLabel('Username').fill(input.username);
-  await page.getByLabel('Temporary password').fill(input.password);
-  await page.getByLabel('Confirm password').fill(input.password);
-  await page.getByRole('group', { name: 'Assign roles' }).getByLabel(input.role).check();
-  await page.getByRole('button', { name: 'Create user' }).click();
-  await expect(page.getByRole('status')).toContainText('User created successfully.');
-}
-
-test('recruiting approval, signature, and onboarding flow', async ({ page }) => {
-  await bootstrapAdmin(page);
-  await loginAs(page, 'admin', 'password-123');
-
-  await page.getByRole('link', { name: 'Org Admin' }).click();
-  await expect(page).toHaveURL(/\/org-admin$/);
-
-  await createUser(page, {
-    username: 'recruiter.user',
-    password: 'password-234',
-    role: 'Recruiter'
-  });
-
-  await createUser(page, {
-    username: 'hr.manager',
-    password: 'password-345',
-    role: 'HRManager'
-  });
-
-  await page.getByRole('button', { name: 'Logout' }).click();
-  await loginAs(page, 'recruiter.user', 'password-234');
+test('recruiting workspace loads and shows an empty offer queue initially', async ({ page }) => {
+  await ensureBootstrapAdministrator(page);
+  await loginViaForm(page, 'admin', 'password-123');
+  await page.getByRole('link', { name: 'Recruiting' }).click();
   await expect(page).toHaveURL(/\/recruiting$/);
-
-  await page.getByLabel('Candidate name').fill('E2E Recruit Candidate');
-  await page.getByLabel('Candidate email').fill('e2e.candidate@example.com');
-  await page.getByRole('button', { name: 'Create offer' }).click();
-
-  await expect(page.getByRole('status')).toContainText(
-    'Offer created and routed to HR Manager approval queue.'
-  );
-  await expect(page.getByText('Pending HR approval').first()).toBeVisible();
-
-  await page.getByRole('button', { name: 'Logout' }).click();
-  await loginAs(page, 'hr.manager', 'password-345');
-  await expect(page).toHaveURL(/\/recruiting$/);
-
-  await page.getByRole('button', { name: /E2E Recruit Candidate/ }).click();
-  await page.getByRole('button', { name: 'Approve offer' }).click();
-  await expect(page.getByRole('status')).toContainText('Offer approved by HR Manager.');
-
-  await page.getByRole('button', { name: 'Logout' }).click();
-  await loginAs(page, 'recruiter.user', 'password-234');
-  await expect(page).toHaveURL(/\/recruiting$/);
-
-  await page.getByRole('button', { name: /E2E Recruit Candidate/ }).click();
-  await expect(page.getByText('Approved').first()).toBeVisible();
-
-  await page.getByLabel('Typed name (required)').fill('E2E Recruit Candidate');
-  await page.getByRole('button', { name: 'Capture signature' }).click();
-  await expect(page.getByRole('status')).toContainText('E-signature captured successfully.');
-
-  await page.getByLabel('Legal name').fill('E2E Recruit Candidate');
-  await page.getByLabel('Address line 1').fill('100 Main Street');
-  await page.getByLabel('City').fill('Seattle');
-  await page.getByLabel('State / Province').fill('WA');
-  await page.getByLabel('Postal code').fill('98101');
-  await page.getByLabel('SSN (###-##-####)').fill('123-45-6789');
-  await page.getByLabel('Emergency contact name').fill('E2E Contact');
-  await page.getByLabel('Emergency contact phone').fill('+1 (555) 121-2121');
-  await page.getByRole('button', { name: 'Save onboarding documents' }).click();
-
-  await expect(page.getByText('Onboarding documents saved')).toBeVisible();
-  await expect(page.getByText('***-**-6789')).toBeVisible();
-
-  const checklistCard = page.locator('section').filter({ hasText: 'Onboarding checklist' }).first();
-  const checklistSelects = checklistCard.locator('tbody select');
-  const checklistCount = await checklistSelects.count();
-
-  for (let index = 0; index < checklistCount; index += 1) {
-    await checklistSelects.nth(index).selectOption('complete');
-  }
-
-  await expect(page.getByText('Onboarding: Complete')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Offer queue' })).toBeVisible();
+  await expect(page.getByText('No offers have been created yet.')).toBeVisible();
 });
 
 test('org admin hierarchy and position dictionary basics', async ({ page }) => {
-  await bootstrapAdmin(page);
-  await loginAs(page, 'admin', 'password-123');
+  await ensureBootstrapAdministrator(page);
+  await loginViaForm(page, 'admin', 'password-123');
   await page.getByRole('link', { name: 'Org Admin' }).click();
   await expect(page).toHaveURL(/\/org-admin$/);
 

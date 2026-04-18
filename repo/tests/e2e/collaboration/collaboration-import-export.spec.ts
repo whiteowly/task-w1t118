@@ -1,32 +1,11 @@
 import { expect, test } from '@playwright/test';
-
-async function bootstrapAdmin(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/');
-  await expect(page).toHaveURL(/\/bootstrap-admin$/);
-
-  await page.getByLabel('Username').fill('admin');
-  await page.getByLabel('Password', { exact: true }).fill('password-123');
-  await page.getByLabel('Confirm password').fill('password-123');
-  await page.getByRole('button', { name: 'Create administrator' }).click();
-
-  await expect(page).toHaveURL(/\/login$/);
-}
-
-async function loginAs(
-  page: import('@playwright/test').Page,
-  username: string,
-  password: string
-): Promise<void> {
-  await page.getByLabel('Username').fill(username);
-  await page.getByLabel('Password').fill(password);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-}
+import { ensureBootstrapAdministrator, loginViaForm } from '../support/auth-helpers';
 
 test('collaboration panel persistence/search and org-admin import/export flows', async ({
   page
 }) => {
-  await bootstrapAdmin(page);
-  await loginAs(page, 'admin', 'password-123');
+  await ensureBootstrapAdministrator(page);
+  await loginViaForm(page, 'admin', 'password-123');
   await expect(page).toHaveURL(/\/merchant$/);
 
   const collaborationPanel = page.getByRole('region', { name: 'Collaboration panel' });
